@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def transcribe_audio(file_path, api_url="http://localhost:8001/transcribe"):
     """
-    调用语音转录API
+    调用语音识别API
 
     :param file_path: 音频文件路径
     :param api_url: API端点地址
