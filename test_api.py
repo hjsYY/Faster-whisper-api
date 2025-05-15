@@ -9,14 +9,14 @@ app = FastAPI(
     description="API for speech recognition using Fast-Whisper",
     version="1.0.0"
 )
+
 model_size = "large"
-# 初始化模型 (可以调整为更大的模型如 small, medium)
 model = WhisperModel(model_size, device="cuda", compute_type="float16")
+
 @app.post("/transcribe")
 async def transcribe_audio(
         file: UploadFile = File(..., description="音频文件(WAV, MP3等格式)")
 ):
-    # 验证文件类型
     allowed_types = ["audio/wav", "audio/mpeg", "audio/mp3", "audio/x-wav"]
     if file.content_type not in allowed_types:
         raise HTTPException(
@@ -30,14 +30,11 @@ async def transcribe_audio(
     temp_filename = f"{temp_dir}/{str(uuid.uuid4())}.mp3"
 
     try:
-        # 保存上传的文件
         with open(temp_filename, "wb") as buffer:
             buffer.write(await file.read())
 
-        # 使用Fast-Whisper进行转录
         segments, info = model.transcribe(temp_filename, beam_size=5)
 
-        # 拼接所有片段
         full_text = " ".join([segment.text for segment in segments])
 
         return JSONResponse({
@@ -50,14 +47,8 @@ async def transcribe_audio(
         raise HTTPException(status_code=500, detail=str(e))
 
     finally:
-        # 清理临时文件
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
-
-
-# @app.get("/health")
-# async def health_check():
-#     return {"status": "healthy", "model": "base"}
 
 if __name__ == "__main__":
     import uvicorn
