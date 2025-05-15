@@ -40,8 +40,6 @@ def transcribe_audio(file_path, api_url="http://localhost:8001/transcribe"):
         logger.error(f"JSON解析失败: {str(e)}")
     return None
 
-
-# 使用示例
 if __name__ == "__main__":
     result = transcribe_audio("./2.wav")
     if result:
